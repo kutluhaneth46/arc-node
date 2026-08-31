@@ -38,13 +38,6 @@ Compare and release-notes links resolve once the corresponding tag is published 
 - **[Config] Execution-layer pruning presets now inject a 128-block pruning interval.**
   - `node --full` and `node --minimal` previously injected `5000`. Set `--prune.block-interval=5000` explicitly to retain that schedule.
 
-### For Application Developers
-
-- **[RPC] JSON-RPC error text on insufficient-balance `eth_call` / `eth_estimateGas` changed with the reth 2.2 / revm 38 upgrade.**
-  - Value exceeds balance: the error previously read `insufficient funds for gas * price + value`; it now reflects revm 38's `OutOfFunds` variant.
-  - Simple (EOA-to-EOA) transfer with insufficient balance: the surfaced error shifted from `Missing or invalid parameters` to `gas required exceeds allowance`.
-  - Tooling that matches JSON-RPC error text on these paths (ethers, viem, wagmi, wallets, etc.) must update its patterns. This is an RPC error-surface change, not a protocol consensus change.
-
 ## [v0.7.3]
 
 **Changes:** [v0.7.2...v0.7.3](https://github.com/circlefin/arc-node/compare/v0.7.2...v0.7.3) -- [release notes](https://github.com/circlefin/arc-node/releases/tag/v0.7.3)
@@ -85,8 +78,8 @@ No breaking changes in this release.
   - Old (`v0.7.1`): `--rpc.gascap` default `50000000` (Reth stock default).
   - New (`v0.7.2`): `--rpc.gascap` default `30000000`.
   - `--rpc.gascap` limits gas available to applicable JSON-RPC simulation paths (`eth_call`, `eth_estimateGas`). Reaching this limit does **not** necessarily mean the corresponding transaction exceeds Arc's protocol-level transaction or block gas limits — it may mean the node-local RPC simulation budget was exhausted first.
-  - `eth_call` and `eth_estimateGas` requests that need more than 30M gas now fail (typically surfacing an out-of-gas style error). This is not the same as an on-chain execution revert or a protocol gas-limit rejection.
-  - Application developers should not treat gas-estimation failures after a node upgrade as proof that a transaction is impossible on-chain. Retry against a node with a higher cap, or ask the operator to raise `--rpc.gascap`.
+  - `eth_call` and `eth_estimateGas` requests that need more than 30M gas now fail. The failure often surfaces as `gas required exceeds allowance (<limit>)` or an out-of-gas style error — the same allowance string is also used when the sender's balance-derived gas budget is exhausted, so compare the parenthesized `<limit>` against the node's configured `--rpc.gascap` to tell a cap rejection from a balance rejection. This is not the same as an on-chain execution revert or a protocol gas-limit rejection.
+  - Application developers should not treat gas-estimation failures after a node upgrade as proof that a transaction is impossible on-chain. Retry against a node with a higher cap, or ask the operator to raise `--rpc.gascap`. Public RPC endpoints may apply a lower effective cap than the repo default.
 
 - **[RPC] `arc-node-execution`: replay-unprotected (pre-EIP-155) transactions are rejected over JSON-RPC by default.**
   - Applications submitting legacy unprotected transactions over RPC now receive `"only replay-protected (EIP-155) transactions allowed over RPC"` unless the operator enables `--arc.rpc.allow-unprotected-txs`.

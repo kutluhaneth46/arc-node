@@ -21,17 +21,18 @@ Spread traffic across providers and serialize concurrent requests per endpoint
 | `https://rpc.quicknode.testnet.arc.io` | QuickNode provider (alternate host) |
 | `https://arc-testnet.drpc.org` | Third-party DRPC endpoint |
 
-The `.arc.io` hosts are the same provider set documented for node follow mode in
-[Running an Arc Node](running-an-arc-node.md); the `.arc.network` hosts are the
-URLs most sample apps and wallets default to.
+The `.arc.io` hosts overlap with the provider set documented for node follow mode in
+[Running an Arc Node](running-an-arc-node.md) (primary, DRPC, Blockdaemon); QuickNode
+answers on `.arc.io` but is not part of that documented follow set. The `.arc.network`
+hosts are the URLs most sample apps and wallets default to.
 
 ## Gas estimation limits
 
 ### EIP-7825 per-transaction cap (protocol)
 
-Arc Testnet activates EIP-7825 (Osaka) via the Zero5/Zero6 hardfork. The
-**per-transaction gas limit is 16,777,216 (2²⁴)** on every node — public RPC,
-self-hosted, and third-party infrastructure alike.
+Arc Testnet activates EIP-7825 (Osaka) at the Osaka hardfork (activated alongside
+Zero5). The **per-transaction gas limit is 16,777,216 (2²⁴)** on every node —
+public RPC, self-hosted, and third-party infrastructure alike.
 
 The effective ceiling for a single `eth_estimateGas` / `eth_call` is therefore:
 
@@ -55,7 +56,7 @@ should pattern-match both families rather than a single string:
 | Shape | Typical code | When |
 | --- | --- | --- |
 | `out of gas: gas required exceeds: 16777216` | `-32003` | Gas budget exceeds EIP-7825 cap (common on cap probes) |
-| `gas required exceeds allowance (16777216)` | `-32000` | Balance-derived allowance clamp (also seen on some paths) |
+| `gas required exceeds allowance (<N>)` | `-32000` | Allowance clamp (balance-derived `N`, or cap-valued `N` on some paths) |
 | Other `out of gas` / halt variants | varies | Cap/limit failures on older reth lineages |
 
 An explicit `"gas": 30000000` in the request is silently clamped to 2²⁴ when the

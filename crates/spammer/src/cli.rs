@@ -565,4 +565,25 @@ mod tests {
 
         assert_eq!(reparsed, original);
     }
+
+    #[test]
+    fn cli_rejects_overflowing_transaction_mix_total() {
+        use clap::Parser;
+
+        #[derive(Parser, Debug)]
+        struct TestCli {
+            #[command(flatten)]
+            args: SpammerArgs,
+        }
+
+        let result = TestCli::try_parse_from([
+            "spammer",
+            "--mix",
+            "transfer=4294967295,legacy=1",
+        ]);
+        assert!(
+            result.is_err(),
+            "CLI accepted transaction mix weights whose total overflows u32"
+        );
+    }
 }

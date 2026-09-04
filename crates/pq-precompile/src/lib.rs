@@ -21,7 +21,7 @@ use revm_interpreter::gas::KECCAK256WORD;
 use revm_interpreter::Gas;
 use slh_dsa::{signature::Verifier, Sha2_128s, Signature, VerifyingKey as SlhDsaVerifyingKey};
 
-/// PQ precompile address — SLH-DSA-SHA2-128s signature verifier.
+/// PQ precompile address — SLH-DSA-SHA2-128s signature verifier (Zero6-gated).
 pub const PQ_ADDRESS: Address = address!("1800000000000000000000000000000000000004");
 
 /// Base gas for SLH-DSA-SHA2-128s verification.

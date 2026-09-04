@@ -2,6 +2,12 @@
 
 All notable changes to arc-node are documented in this file.
 
+## [Unreleased]
+
+### Fixes
+
+- [EL] Restore Zero6 registration gate for the PQ precompile (regressed in v0.8.0); pre-Zero6 blocks no longer execute the verifier on replay
+
 ## [v0.8.0]
 
 **Changes:** [v0.7.3...v0.8.0](https://github.com/circlefin/arc-node/compare/v0.7.3...v0.8.0) -- [release notes](https://github.com/circlefin/arc-node/releases/tag/v0.8.0)

@@ -237,7 +237,10 @@ impl TxGenerator {
     }
 
     fn select_tx_type(&self) -> Result<TxType> {
-        let total = self.tx_type_mix.total_weight();
+        let total = self
+            .tx_type_mix
+            .checked_total_weight()
+            .ok_or_else(|| eyre::eyre!("--mix total weight overflows u32"))?;
         if total == 0 {
             eyre::bail!("select_tx_type called with total weight 0");
         }

@@ -151,6 +151,12 @@ export const slotForBytes32Map = (slotIndex: bigint, key: Bytes32): Bytes32 =>
   slotForUint256Map(slotIndex, fromHex(schemaBytes32.parse(key), 'bigint'))
 
 /**
+ * Ethereum addresses are case-insensitive. Genesis configs may mix EIP-55
+ * checksummed and lowercase forms of the same address; compare accordingly.
+ */
+export const sameAddress = (a: Address, b: Address): boolean => a.toLowerCase() === b.toLowerCase()
+
+/**
  * Emit a zod issue for any operator that collides with the contract's proxy admin.
  */
 export const enforceOperatorsNotProxyAdmin = (
@@ -160,7 +166,7 @@ export const enforceOperatorsNotProxyAdmin = (
   operators: ReadonlyArray<{ key: string; value: Address }>,
 ) => {
   for (const { key, value } of operators) {
-    if (value === proxyAdmin) {
+    if (sameAddress(value, proxyAdmin)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `Operator ${key} cannot be the same as the proxy admin of ${contractName}`,
